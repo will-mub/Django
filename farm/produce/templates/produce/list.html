@@ -1,0 +1,91 @@
+<!-- Produce list page: shows inventory items and supports search by product name. -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Produce Inventory{% endblock %}
+
+{% block content %}
+
+<h1>Farm Produce Inventory</h1>
+
+<a href="{% url 'produce_create' %}" class="button">
+    + Add New Produce
+</a>
+
+<div class="panel">
+
+    <form method="GET">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search produce..."
+            value="{{ search }}"
+        >
+
+        <button class="button" type="submit">
+            Search
+        </button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produce</th>
+                <th>Category</th>
+                <th>Price (UGX)</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for product in products %}
+
+            <tr>
+                <td>{{ product.name }}</td>
+
+                <td>{{ product.get_category_display }}</td>
+
+                <td>{{ product.selling_price|floatformat:2 }}</td>
+
+                <td>
+                    {{ product.quantity_in_stock }}
+                    {{ product.get_unit_display }}
+                </td>
+
+                <td>
+                    {% if product.is_low_stock %}
+                        <span class="low">Low Stock</span>
+                    {% else %}
+                        In Stock
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{% url 'produce_update' product.pk %}">
+                        Edit
+                    </a>
+
+                    |
+
+                    <a href="{% url 'produce_delete' product.pk %}">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="6">No produce records found.</td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

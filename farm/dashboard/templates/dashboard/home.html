@@ -1,0 +1,64 @@
+<!-- Dashboard home page: summarizes key farm metrics such as products, customers, and stock alerts. -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Farm Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h1>Farm Overview</h1>
+
+<p class="subtitle">
+    Welcome back, {{ request.user.username }}.
+    Here's your farm's current performance.
+</p>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-label">Total Produce</div>
+        <div class="stat-number">{{ total_produce }}</div>
+        <small>Registered products</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Total Customers</div>
+        <div class="stat-number">{{ total_customers }}</div>
+        <small>Registered customers</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Low Stock Items</div>
+        <div class="stat-number">{{ low_stock }}</div>
+        <small>Require attention</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Farm Status</div>
+        <div class="stat-number">Active</div>
+        <small>System operational</small>
+    </div>
+
+</div>
+
+<div class="panel">
+
+    <h2>Farm Operations</h2>
+
+    <p class="subtitle">
+        Manage your farm's daily activities.
+    </p>
+
+    <a href="{% url 'produce_list' %}" class="btn">
+        Manage Produce →
+    </a>
+
+    <a href="/admin/" class="btn">
+        Administration →
+    </a>
+
+</div>
+
+{% endblock %}

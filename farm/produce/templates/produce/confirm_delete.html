@@ -1,0 +1,31 @@
+<!-- Produce delete confirmation page: confirms whether an inventory item should be removed. -->
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Delete Produce</h1>
+
+<div class="card">
+
+    <p>
+        Are you sure you want to delete
+        <strong>{{ product.name }}</strong>?
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="button danger">
+            Confirm Delete
+        </button>
+
+        <a href="{% url 'produce_list' %}">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,126 @@
+<!-- Base template: provides shared layout and styling used across the farm management pages. -->
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}Farm Manager{% endblock %}
+    </title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
+          href="{% static 'css/farm.css' %}">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+   <aside class="sidebar">
+
+    <div class="sidebar-brand">
+        <i class="bi bi-flower1"></i>
+        <span>Farm Manager</span>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <a href="/" class="nav-link">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'produce_list' %}" class="nav-link">
+            <i class="bi bi-box-seam"></i>
+            <span>Produce Inventory</span>
+        </a>
+
+        <a href="{% url 'customer_list' %}" class="nav-link">
+            <i class="bi bi-people"></i>
+            <span>Customers</span>
+        </a>
+        <a href="{% url 'supplier_list' %}" class="nav-link">
+            <i class="bi bi-truck"></i>
+            <span>Suppliers</span>
+        </a>
+
+       <a href="{% url 'sale_list' %}" class="nav-link">
+            <i class="bi bi-cart3"></i>
+            <span>Sales</span>
+        </a>
+
+        <a href="#" class="nav-link">
+            <i class="bi bi-cash-stack"></i>
+            <span>Expenses</span>
+        </a>
+
+
+        <a href="#" class="nav-link">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Reports</span>
+        </a>
+
+        <a href="/admin/" class="nav-link">
+            <i class="bi bi-gear"></i>
+            <span>Administration</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <strong>Farm Management</strong>
+                <small> / {% block breadcrumb %}Dashboard{% endblock %}</small>
+            </div>
+
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ request.user.username|first|upper }}
+                </div>
+
+                <div class="user-details">
+                    <strong>{{ request.user.username }}</strong>
+                    <small>Farm Administrator</small>
+                </div>
+
+                <i class="bi bi-chevron-down"></i>
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

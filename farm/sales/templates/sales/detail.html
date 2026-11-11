@@ -1,0 +1,58 @@
+<!-- Sales detail page: displays one complete sale with customer information and item totals. -->
+
+{% extends 'base.html' %}
+
+{% block title %}Sale Details{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Sale #{{ sale.id }}</h1>
+    <a href="{% url 'sale_list' %}" class="button">Back to Sales</a>
+</div>
+
+<div class="panel">
+    <p><strong>Customer:</strong>
+        {% if sale.customer %}
+            {{ sale.customer.full_name }}
+        {% else %}
+            Walk-in Customer
+        {% endif %}
+    </p>
+
+    <p><strong>Date:</strong> {{ sale.sale_date|date:"d M Y, H:i" }}</p>
+    <p><strong>Payment Method:</strong> {{ sale.get_payment_method_display }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produce</th>
+                <th>Quantity</th>
+                <th>Unit Price (UGX)</th>
+                <th>Total (UGX)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in sale.items.all %}
+            <tr>
+                <td>{{ item.produce.name }}</td>
+                <td>{{ item.quantity }} {{ item.produce.get_unit_display }}</td>
+                <td>{{ item.unit_price|floatformat:2 }}</td>
+                <td>{{ item.line_total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <p><strong>Total:</strong> UGX {{ sale.total_amount|floatformat:2 }}</p>
+    <p><strong>Amount Paid:</strong> UGX {{ sale.amount_paid|floatformat:2 }}</p>
+    <p><strong>Balance:</strong> UGX {{ sale.balance|floatformat:2 }}</p>
+    <p><strong>Payment Status:</strong> {{ sale.payment_status }}</p>
+
+    {% if sale.notes %}
+        <p><strong>Notes:</strong> {{ sale.notes }}</p>
+    {% endif %}
+</div>
+{% endblock %}

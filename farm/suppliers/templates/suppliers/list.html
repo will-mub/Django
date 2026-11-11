@@ -1,0 +1,78 @@
+<!-- Suppliers list page: shows all vendors and supports filtering by name, contact, or phone number. -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Supplier Management{% endblock %}
+
+{% block content %}
+
+<h1>Supplier Management</h1>
+
+<a href="{% url 'supplier_create' %}" class="button">
+    <i class="bi bi-plus-circle"></i> Add Supplier
+</a>
+
+<div class="panel">
+
+    <form method="GET">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search suppliers..."
+            value="{{ search }}"
+        >
+        <button type="submit" class="button">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Supplier</th>
+                <th>Supply Type</th>
+                <th>Contact Person</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.get_supplier_type_display }}</td>
+                <td>{{ supplier.contact_person|default:"—" }}</td>
+                <td>{{ supplier.phone_number }}</td>
+                <td>{{ supplier.email|default:"—" }}</td>
+                <td>
+                    {% if supplier.is_active %}
+                        <span class="in-stock">Active</span>
+                    {% else %}
+                        <span class="low-stock">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'supplier_update' supplier.pk %}">
+                        Edit
+                    </a>
+                    |
+                    {% if supplier.is_active %}
+                    <a href="{% url 'supplier_delete' supplier.pk %}">
+                        Deactivate
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No suppliers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

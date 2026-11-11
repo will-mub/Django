@@ -1,0 +1,55 @@
+<!-- Sales form page: lets staff record a sale and add product items to the transaction. -->
+
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ page_title }}</h1>
+</div>
+
+<div class="panel">
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <h3>Sale Information</h3>
+
+        {{ form.as_p }}
+
+        <hr>
+
+        <h3>Produce Items</h3>
+        {{ formset.management_form }}
+
+        {% for item_form in formset %}
+            <div class="sale-item-row">
+                {{ item_form.id }}
+                {{ item_form.as_p }}
+
+                {% if item_form.DELETE %}
+                    <label>{{ item_form.DELETE }} Remove this item</label>
+                {% endif %}
+
+                {% for error in item_form.non_field_errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="button">
+            <i class="bi bi-check-circle"></i> Save Sale
+        </button>
+
+        <a href="{% url 'sale_list' %}" class="button">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

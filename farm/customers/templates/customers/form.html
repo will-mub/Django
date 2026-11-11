@@ -1,0 +1,30 @@
+<!-- Customer form page: collects the details needed to create or edit customer records. -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ page_title }}</h1>
+
+<div class="panel">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="button">
+            Save Customer
+        </button>
+
+        <a href="{% url 'customer_list' %}" class="button">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

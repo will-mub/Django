@@ -1,0 +1,103 @@
+<!-- Produce base template: defines common layout and navigation for inventory pages. -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Farm Management{% endblock %}</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            background: #f4f7f4;
+            color: #26352a;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #245c35;
+        }
+
+        .button {
+            display: inline-block;
+            background: #287a43;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .danger {
+            background: #c0392b;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 7px #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #eaf2eb;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 7px 0 15px;
+            box-sizing: border-box;
+        }
+
+        .alert {
+            background: #e2f4e5;
+            padding: 12px;
+            margin: 12px 0;
+        }
+
+        .low {
+            color: #c0392b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a href="/" class="button">Dashboard</a>
+    <a href="/produce/" class="button">Produce</a>
+
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+</body>
+</html>

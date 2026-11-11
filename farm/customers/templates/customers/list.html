@@ -1,0 +1,60 @@
+<!-- Customer list page: displays all registered buyers and allows staff to search, update, or remove records. -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Customer Management{% endblock %}
+
+{% block content %}
+
+<h1>Customer Management</h1>
+
+<a href="{% url 'customer_create' %}" class="button">
+    <i class="bi bi-person-plus"></i> Add Customer
+</a>
+
+<div class="panel">
+
+    <form method="GET">
+        <input type="text" name="search"
+               placeholder="Search customers..."
+               value="{{ search }}">
+
+        <button type="submit" class="button">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.full_name }}</td>
+                <td>{{ customer.phone_number }}</td>
+                <td>{{ customer.email|default:"—" }}</td>
+                <td>{{ customer.address|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'customer_update' customer.pk %}">Edit</a>
+                    |
+                    <a href="{% url 'customer_delete' customer.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No customers registered yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

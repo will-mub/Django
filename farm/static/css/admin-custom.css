@@ -1,0 +1,157 @@
+
+/* Farm Management Admin Theme */
+
+:root {
+    --primary: #173f2b;
+    --secondary: #28583e;
+    --accent: #347b50;
+    --light-green: #eaf3ec;
+    --text-dark: #20352a;
+}
+
+/* Main admin header */
+#header {
+    background: var(--primary);
+    color: #ffffff;
+    padding: 15px 25px;
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+#site-name a {
+    color: #ffffff !important;
+    font-size: 21px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+#site-name i {
+    color: #8fd694;
+    margin-right: 10px;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: var(--secondary);
+    color: #ffffff;
+}
+
+/* Buttons */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input {
+    background: var(--accent) !important;
+    border-radius: 6px !important;
+}
+
+.button:hover,
+input[type=submit]:hover {
+    background: var(--primary) !important;
+}
+
+/* Links */
+a:link,
+a:visited {
+    color: var(--accent);
+}
+
+a:hover {
+    color: var(--primary);
+}
+
+/* Dashboard modules */
+.module h2,
+.module caption,
+.inline-group h2 {
+    background: var(--secondary);
+}
+
+/* Login page */
+.login {
+    background: var(--light-green);
+}
+
+.login #header {
+    background: var(--primary);
+}
+
+.login #content {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+}
+
+.login .submit-row {
+    padding: 0;
+}
+
+/* Improve admin login form visibility */
+
+.login #content-main {
+    width: 100%;
+}
+
+/* Username and password labels */
+.login .form-row label {
+    display: block;
+    color: #173f2b !important;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* Input fields */
+.login .form-row input[type="text"],
+.login .form-row input[type="password"] {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 46px;
+    padding: 12px 14px;
+    background: #ffffff !important;
+    color: #172b20 !important;
+    border: 2px solid #9aafa0 !important;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+/* Placeholder text */
+.login input::placeholder {
+    color: #687b6e !important;
+    opacity: 1;
+}
+
+/* Highlight selected field */
+.login .form-row input:focus {
+    border-color: #347b50 !important;
+    outline: 3px solid rgba(52, 123, 80, 0.15);
+    box-shadow: none !important;
+}
+
+/* Field spacing */
+.login .form-row {
+    padding: 12px 0;
+}
+
+/* Login button */
+.login .submit-row input[type="submit"] {
+    width: 100%;
+    min-height: 46px;
+    background: #28583e !important;
+    color: #ffffff !important;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.login .submit-row input[type="submit"]:hover {
+    background: #173f2b !important;
+}

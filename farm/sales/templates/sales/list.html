@@ -1,0 +1,68 @@
+<!-- Sales list page: shows recorded transactions and helps staff review payment history. -->
+
+{% extends 'base.html' %}
+
+{% block title %}Sales Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Sales Management</h1>
+    <a href="{% url 'sale_create' %}" class="button">
+        <i class="bi bi-plus-circle"></i> Record Sale
+    </a>
+</div>
+
+<div class="panel">
+    <form method="GET">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search by customer name..."
+            value="{{ search }}"
+        >
+        <button type="submit" class="button">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sale No.</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total (UGX)</th>
+                <th>Paid (UGX)</th>
+                <th>Balance (UGX)</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>#{{ sale.id }}</td>
+                <td>
+                    {% if sale.customer %}
+                        {{ sale.customer.full_name }}
+                    {% else %}
+                        Walk-in Customer
+                    {% endif %}
+                </td>
+                <td>{{ sale.sale_date|date:"d M Y, H:i" }}</td>
+                <td>{{ sale.total_amount|floatformat:2 }}</td>
+                <td>{{ sale.amount_paid|floatformat:2 }}</td>
+                <td>{{ sale.balance|floatformat:2 }}</td>
+                <td>{{ sale.payment_status }}</td>
+                <td>
+                    <a href="{% url 'sale_detail' sale.pk %}">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">No sales recorded yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
