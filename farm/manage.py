@@ -11,6 +11,7 @@ def main():
     # Point Django to the project's default settings file.    
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'farm.settings')
     try:
+        # Import Django's command line execution function         
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
