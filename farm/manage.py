@@ -23,6 +23,6 @@ def main():
         # Execute the command passed via the terminal.
     execute_from_command_line(sys.argv)
 
-
+# Ensure main() only runs when this script is executed directly, not when imported 
 if __name__ == '__main__':
     main()
