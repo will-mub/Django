@@ -1,4 +1,4 @@
-"""URL routes for the customer app. Each path maps to a view that lets staff work with customer records in the browser."""
+"""URL routes for the customer app and each path maps to a view that lets staff work with customer records in the browser."""
 
 
 from django.urls import path
