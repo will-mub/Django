@@ -1,7 +1,7 @@
 # Django Farm Management System
 
 - Course: Object-Oriented Programming using Python
-- Repository: https://github.com/will-mub/OPP.git
+- Repository: https://github.com/will-mub/Django.git
 - Language: Python
 - Database: SQLite
 
