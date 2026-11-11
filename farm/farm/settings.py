@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'dashboard',
     'suppliers',
     'sales',
+    'expenses',
+    'reports',
 ]
 
 

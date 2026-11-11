@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Void Expense{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h1>Void Expense</h1>
+
+    <p>
+        Are you sure you want to void
+        <strong>{{ expense.title }}</strong>?
+    </p>
+
+    <p>
+        Amount: UGX {{ expense.amount|floatformat:2 }}
+    </p>
+
+    <p>
+        The record will remain in the database but will no longer
+        count towards expense totals.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="button">
+            Confirm Void
+        </button>
+
+        <a href="{% url 'expense_list' %}" class="button">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

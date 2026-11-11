@@ -1,0 +1,152 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Farm Reports{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Farm Reports & Analytics</h1>
+    <p>Overview of your farm's financial performance.</p>
+</div>
+
+<div class="dashboard-cards">
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="bi bi-currency-exchange"></i>
+        </div>
+        <h3>Total Sales</h3>
+        <h2>UGX {{ sales_total|floatformat:2 }}</h2>
+        <small>{{ total_sales }} sales recorded</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="bi bi-cash-stack"></i>
+        </div>
+        <h3>Total Expenses</h3>
+        <h2>UGX {{ expenses_total|floatformat:2 }}</h2>
+        <small>{{ total_expense_records }} expense records</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <h3>Estimated Profit</h3>
+        <h2>UGX {{ estimated_profit|floatformat:2 }}</h2>
+        <small>Sales minus recorded expenses</small>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h3>Low Stock Items</h3>
+        <h2>{{ low_stock_count }}</h2>
+        <small>Items requiring attention</small>
+    </div>
+
+</div>
+
+<div class="panel">
+    <h2>Best-Selling Produce</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produce</th>
+                <th>Quantity Sold</th>
+                <th>Revenue (UGX)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in best_sellers %}
+            <tr>
+                <td>{{ item.produce__name }}</td>
+                <td>{{ item.quantity_sold }} {{ item.produce__unit }}</td>
+                <td>{{ item.revenue|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No sales data available yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Monthly Sales and Expenses</h2>
+    <p>Monthly figures for the last six calendar months.</p>
+
+    <h3>Sales</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Revenue (UGX)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in monthly_sales %}
+            <tr>
+                <td>{{ item.month|date:"F Y" }}</td>
+                <td>{{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">No sales data available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Expenses</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Expenses (UGX)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in monthly_expenses %}
+            <tr>
+                <td>{{ item.month|date:"F Y" }}</td>
+                <td>{{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">No expense data available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Low Stock Alerts</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produce</th>
+                <th>Available Stock</th>
+                <th>Reorder Level</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in low_stock %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity_in_stock }} {{ item.get_unit_display }}</td>
+                <td>{{ item.reorder_level }} {{ item.get_unit_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No low-stock items.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

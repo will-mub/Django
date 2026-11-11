@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ page_title }}</h1>
+</div>
+
+<div class="panel">
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="button">
+            <i class="bi bi-check-circle"></i> Save Expense
+        </button>
+
+        <a href="{% url 'expense_list' %}" class="button">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}
