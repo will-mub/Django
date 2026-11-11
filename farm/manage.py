@@ -8,6 +8,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    # Point Django to the project's default settings file.    
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'farm.settings')
     try:
         from django.core.management import execute_from_command_line
