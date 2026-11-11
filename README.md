@@ -1,7 +1,7 @@
 # Django Farm Management System
 
-- Course: Object-Oriented Programming 
-- Repository: <https://github.com/will-mub/OPP.git>
+- Course: Object-Oriented Programming using Python
+- Repository: https://github.com/will-mub/OPP.git
 - Language: Python
 - Database: SQLite
 
@@ -18,72 +18,108 @@
 
 ## Overview
 
-This project is a browser-based farm record-keeping system built with Django. It brings produce stock, customers, suppliers, sales, expenses and reports into one database, with pages and forms for viewing and updating each of them.
+This is a web app for keeping a farm's records in one place. It tracks produce stock, customers, suppliers, sales and expenses, and it has a reports page that pulls the numbers together: total sales, total expenses, estimated profit, low-stock items and best sellers.
 
-The problem behind it is a simple one. Farm records kept in separate notebooks or spreadsheets are hard to search and hard to compare. Which items are running low? What was spent this month against what was sold? Having everything connected in one place makes those questions easier to answer.
+The idea came from a simple problem. When records live in separate notebooks or spreadsheets, it's slow to answer basic questions like "what are we running out of?" or "did we spend more this month than we earned?". Here, everything sits in one database and the pages are linked, so recording a sale also updates the stock automatically.
 
-The project also serves as a practical case study for the course. Each part of the farm (a produce item, a customer, a sale) maps naturally onto a Python class, which lets us show classes, objects, inheritance and encapsulation in code that does something real.
+It's also our project for the Object-Oriented Programming course. A farm has natural "things" in it (a produce item, a customer, a sale), and each one is a Python class in the code, so the project doubles as a worked example of classes, objects, inheritance and encapsulation.
 
-This is an academic prototype. It has not been tested or hardened for day-to-day use on an actual farm (see Limitations).
+This is an academic prototype. It hasn't been hardened for use on a real farm (see Limitations).
 
 ## Objectives
 
-- Store farm-related records in a single database.
-- Provide forms and pages for viewing and updating those records.
-- Use Django models, URLs, views, templates and migrations as intended.
-- Show how classes, objects and relationships support a working application.
-- Document the setup and structure so another person can run and review the project.
+- Keep farm records in a single database instead of scattered files.
+- Give staff pages and forms to add, view, search and update those records.
+- Make sales update stock automatically and refuse sales the stock can't cover.
+- Summarise sales, expenses and stock in a reports page.
+- Use Django's models, URLs, views, templates and migrations the way they're meant to be used.
+- Show where the four main OOP ideas appear in real code.
 
-## Scope and features
+## Features
 
-The system is divided into Django apps, one per business area.
+The project is split into Django apps, one for each area of the farm.
 
-| App | What it handles |
+| App | What it does |
 |---|---|
-| produce | Inventory records: name, category, unit, selling price, quantity in stock and reorder level. |
-| customers | Customer names and contact details, used when recording sales. |
-| suppliers | Supplier and contact information. Suppliers no longer in use can be deactivated instead of removed. |
-| sales | Sales and the individual items in each sale. Recording a valid sale reduces stock for the produce sold. |
-| expenses | Farm costs. Incorrect entries are marked void rather than deleted, so the history is kept. |
-| reports | Summaries of recorded sales and expenses, low-stock items and best-selling produce. |
+| `dashboard` | The home page. Shows the number of produce items, number of customers and how many items are low on stock. |
+| `produce` | Inventory. Each item has a name, category (crop, dairy, poultry, livestock, other), unit, selling price, quantity in stock and reorder level. Add, edit, delete and search by name. |
+| `customers` | Customer name, phone, email and address. Add, edit, delete and search by name or phone. |
+| `suppliers` | Supplier name, type (seeds, fertiliser, animal feed, equipment, veterinary, general), contact person, phone, email, address and notes. "Deleting" a supplier only marks it inactive, so it isn't lost. |
+| `sales` | Record a sale with one or more produce items, a payment method (cash, mobile money, bank, other) and the amount paid. Shows a payment status of Unpaid, Partially Paid or Paid. |
+| `expenses` | Record costs by category (seeds, labour, transport, utilities and so on) with an optional receipt number. Wrong entries are voided instead of deleted, and voided expenses are left out of the totals. |
+| `reports` | Total sales, total expenses, estimated profit, low-stock list, top five best sellers and monthly sales and expenses for the last six months. |
 
-Some screens and actions may be more complete than others in the current local build. Check what works before relying on a particular feature.
+Every page needs a login. Anyone who isn't signed in is sent to the Django admin login page.
+
+### How a sale works
+
+Recording a sale is the most involved part of the app, so it's worth explaining:
+
+1. You pick a customer (optional), a payment method and the amount paid, then add one or more produce items with a quantity and unit price.
+2. The app checks that at least one item was added and that the amount paid isn't more than the sale total.
+3. Everything is saved inside one database transaction. For each item, stock is reduced only if enough is available.
+4. If any item doesn't have enough stock, the whole sale is cancelled and nothing is saved, so you never end up with a half-recorded sale.
 
 ## How it works
 
-Django follows a Model-View-Template (MVT) pattern. A request passes through four steps before the browser gets a page back. Take the produce list as the example:
+Django follows a Model-View-Template pattern. Using the produce list as the example, when someone opens `/produce/`:
 
-1. The browser opens `/produce/`.
-2. The URL router matches the path to a pattern in `produce/urls.py`, which points to the `produce_list` view.
-3. The view asks the database for `Produce` records through the Django ORM.
-4. A template loops through the records and renders them as an HTML table.
+1. The URL router in `farm/urls.py` sends `produce/` to the produce app's `urls.py`.
+2. That file points the empty path to the `produce_list` view.
+3. The view fetches `Produce` records through the Django ORM, filtering by name if a search was entered.
+4. A template renders the records as an HTML page.
 
 ```python
 # produce/urls.py
 urlpatterns = [
-    path("", views.produce_list, name="produce_list"),
+    path('', views.produce_list, name='produce_list'),
+    path('add/', views.produce_create, name='produce_create'),
+    path('edit/<int:pk>/', views.produce_update, name='produce_update'),
+    path('delete/<int:pk>/', views.produce_delete, name='produce_delete'),
 ]
 
 # produce/views.py
+@login_required
 def produce_list(request):
-    items = Produce.objects.all()
-    return render(request, "produce/produce_list.html", {"items": items})
+    search = request.GET.get('search', '')
+    products = Produce.objects.all().order_by('-created_at')
+    if search:
+        products = products.filter(name__icontains=search)
+    return render(request, 'produce/list.html', {
+        'products': products,
+        'search': search,
+    })
 ```
 
-The URL chooses the view, the view fetches the data, and the template decides how it is shown.
+The URL picks the view, the view gets the data, and the template decides how it looks.
+
+### URL map
+
+| Path | Page |
+|---|---|
+| `/` | Dashboard |
+| `/produce/` | Produce list (also `add/`, `edit/<id>/`, `delete/<id>/`) |
+| `/customers/` | Customer list (also `add/`, `edit/<id>/`, `delete/<id>/`) |
+| `/suppliers/` | Supplier list (also `add/`, `edit/<id>/`, `delete/<id>/`) |
+| `/sales/` | Sales list (also `add/` and `<id>/` for details) |
+| `/expenses/` | Expense list (also `add/`, `edit/<id>/`, `void/<id>/`) |
+| `/reports/` | Reports dashboard |
+| `/admin/` | Django admin site |
 
 ## Database and models
 
-Each model is a Python class that describes a database table. The core of the `Produce` model:
+Each model is a Python class that Django turns into a database table. The `Produce` model:
 
 ```python
 class Produce(models.Model):
     name = models.CharField(max_length=150)
-    category = models.CharField(max_length=20)
-    unit = models.CharField(max_length=20)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    description = models.TextField(blank=True)
+    unit = models.CharField(max_length=20, choices=UNIT_CHOICES)
     selling_price = models.DecimalField(max_digits=12, decimal_places=2)
     quantity_in_stock = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     reorder_level = models.DecimalField(max_digits=12, decimal_places=2, default=10)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -93,120 +129,111 @@ class Produce(models.Model):
         return self.quantity_in_stock <= self.reorder_level
 ```
 
-SQLite is used for local development. When a model changes, the workflow is:
+The models are connected to each other:
 
-1. Edit the model in `models.py`.
-2. Run `python manage.py makemigrations` to generate a migration file.
-3. Run `python manage.py migrate` to apply it to the database.
+- A `Sale` can belong to a `Customer` (optional) and to the user who recorded it.
+- A `Sale` has many `SaleItem` records, and each `SaleItem` points to a `Produce` item.
+- A `Customer` or `Produce` item that already appears in a sale can't be deleted (`on_delete=models.PROTECT`), which keeps sales history intact.
+- An `Expense` records who entered it and has an `is_void` flag.
 
-A migration is a record of a schema change, so the database can be updated consistently.
+The `Sale` model also works out its own figures with properties: `total_amount` adds up the line totals of its items, `balance` is the total minus what's been paid, and `payment_status` turns that into Unpaid, Partially Paid or Paid.
+
+SQLite is the database, stored in `db.sqlite3`. When a model changes, the workflow is to run `makemigrations` to create a migration file, then `migrate` to apply it.
 
 ## Object-oriented concepts in the code
 
-All four examples below come from `produce/models.py`.
+**Class.** `Produce`, `Customer`, `Supplier`, `Sale`, `SaleItem` and `Expense` are classes. Each one is a blueprint for one kind of record, and Django uses it to build the matching database table.
 
-**Class.** `Produce` is the blueprint. It defines what every produce record stores, and Django uses it to build the matching database table.
+**Object.** A single record is an object made from a class. `Produce.objects.get(name="Maize")` returns one `Produce` object with its own price and stock level. Every produce item has the same structure but different values.
 
-**Object.** A single record is an object created from that class. For example, `Produce.objects.get(name="Maize")` returns one `Produce` object with its own stock quantity and price. It shares its structure with every other produce item but holds different values.
+**Inheritance.** All the models inherit from Django's `models.Model`, which gives them database behaviour such as `save()` and `delete()` for free. We only add the farm-specific fields and rules on top.
 
-**Inheritance.** `Produce` inherits from Django's `models.Model`. That gives it database mapping and methods such as `save()` and `delete()` without us writing them. The Customer, Supplier, Sale and Expense models follow the same pattern.
-
-**Encapsulation.** The `is_low_stock` property keeps the reorder rule inside the class, next to the data it depends on. Other code can check `produce.is_low_stock` instead of repeating the comparison. Python fields are not private, so what this shows is related data and behaviour being kept together, not hidden.
+**Encapsulation.** Rules live inside the class that owns the data. `Produce.is_low_stock` keeps the reorder rule next to the stock fields, and `Sale.payment_status` keeps the payment logic inside `Sale`. The rest of the app just reads `produce.is_low_stock` or `sale.payment_status` instead of repeating the logic. Python doesn't make these fields private, so this is about keeping related data and behaviour together, not hiding it.
 
 ## Repository structure
 
 ```
-farm/
-├── manage.py
-├── config/
-│   ├── settings.py        # Installed apps, database, templates, other settings
-│   ├── urls.py            # Project-level URL routing
-│   └── wsgi.py
-├── produce/
-│   ├── models.py          # Database-backed classes
-│   ├── views.py           # Request handling
-│   ├── forms.py
-│   ├── urls.py            # App-level URL routing
-│   └── templates/
-├── customers/
-├── suppliers/
-├── sales/
-├── expenses/
-├── reports/
-├── templates/             # Shared HTML files
-└── static/
-    └── css/               # Stylesheets and other static assets
+OPP/
+├── README.md
+└── farm/
+    ├── manage.py
+    ├── db.sqlite3
+    ├── farm/                 # Project settings and root URLs
+    │   ├── settings.py
+    │   ├── urls.py
+    │   ├── asgi.py
+    │   └── wsgi.py
+    ├── dashboard/            # Home page
+    ├── produce/              # Inventory
+    ├── customers/            # Customer records
+    ├── suppliers/            # Supplier records
+    ├── sales/                # Sales and sale items
+    ├── expenses/             # Expenses and voiding
+    ├── reports/              # Totals, low stock, best sellers
+    ├── templates/            # Shared base template and admin branding
+    └── static/css/           # farm.css and admin-custom.css
 ```
 
-`config/` holds project-wide configuration. Every other folder is an app that keeps the code for one business area together.
+Each app folder holds its own `models.py`, `views.py`, `urls.py`, `forms.py`, `admin.py`, `migrations/` and a `templates/` folder.
 
 ## Installation
 
-Use Python 3 in a virtual environment. These steps are for the local Windows setup we developed on. From the project root:
+You need Python 3.12 or newer (the project was generated with Django 6.1). The steps below are for Windows; on macOS or Linux, use `source venv/bin/activate` to activate the environment.
 
 ```bash
+git clone https://github.com/will-mub/OPP.git
+cd OPP/farm
+
 python -m venv venv
 venv\Scripts\activate
-```
 
-On macOS or Linux, activate with `source venv/bin/activate` instead.
-
-Install the dependencies:
-
-```bash
-pip install django pillow
-```
-
-Django is the web framework. Pillow handles images where needed.
-
-If you are building the project from scratch rather than using the existing code, the project and first app were created with:
-
-```bash
-django-admin startproject config .
-python manage.py startapp produce
+pip install django
 ```
 
 ## Running the project
 
-Apply the migrations, then start the development server:
+From inside the `farm` folder:
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/ in a browser. Press `Ctrl + C` in the terminal to stop the server.
+Then open http://127.0.0.1:8000/ and sign in with the account you just created. Press `Ctrl + C` in the terminal to stop the server.
 
-To add records through Django's admin site, create an account first with `python manage.py createsuperuser`.
+The repository includes a `db.sqlite3` file that already has a few sample records, so the pages aren't empty on first run. You'll still want to create your own superuser, since you won't know the passwords for the accounts already in that file.
 
-The development server is for local testing and demonstration only. It should not be used for public hosting.
+The development server is for testing and demos only, not public hosting.
 
-## Demonstration checklist
+## Demonstration walkthrough
 
-For a walkthrough of the project, the sequence we follow is:
-
-1. Activate the virtual environment and start the server.
-2. Open the dashboard and go to the Produce page.
-3. Show at least three existing produce records.
-4. Add a new produce item and confirm it appears in the list.
-5. Open `urls.py`, `views.py`, the template and the `Produce` model to explain how they connect.
-6. Explain `makemigrations`, `migrate` and the SQLite database.
+1. Start the server and sign in.
+2. On the dashboard, point out the produce count, customer count and low-stock count.
+3. Open Produce, add an item, and set its reorder level above its stock to see it flagged as low.
+4. Add a customer, then record a sale for them. Go back to Produce and show that stock went down.
+5. Try selling more than what's in stock and show that the sale is refused.
+6. Record an expense, then void it and show that it disappears from the list and the totals.
+7. Open Reports for the sales total, expense total, estimated profit and best sellers.
+8. Open `urls.py`, `views.py`, a template and `models.py` to show how the pieces connect.
 
 ## Limitations
 
-- This is a prototype built for a course, not a finished product.
-- Workflows have not been tested at length with realistic data.
-- There are no role-based permissions, so every user has the same access.
-- Audit trails, validation, error handling and backups are basic or incomplete.
-- The project uses SQLite and the Django development server, so it is not set up for secure multi-user deployment.
+- Anyone with a login has full access. There are no roles or permissions.
+- The test files are empty, so nothing is covered by automated tests yet.
+- Settings are in development mode: `DEBUG = True`, an exposed secret key and empty `ALLOWED_HOSTS`. This isn't safe to deploy as is.
+- Sales can be created and viewed, but not edited or cancelled afterwards.
+- The currency isn't fixed in the data fields. Expenses are displayed in UGX, but sales and produce prices are plain numbers.
+- Customers and produce are deleted for real (unless they're linked to a sale), while suppliers and expenses are only deactivated or voided.
+- Reports use a simple profit figure (sales total minus expenses), which ignores stock purchase costs.
 
 ## Future improvements
 
-- Test every workflow with realistic sample data.
-- Add role-based permissions and stronger audit trails.
-- Improve backup, validation and error handling.
-- Prepare a secure deployment for multi-user use.
+- Add automated tests for the models and views, especially the sale and stock logic.
+- Add user roles so different staff can do different things.
+- Allow sales to be edited or cancelled, with stock restored.
+- Move secrets and debug settings into environment variables before any real deployment.
+- Add backups and better error handling.
 
 ## Authors and academic context
 
