@@ -94,7 +94,7 @@ The repository includes `db.sqlite3` with sample records. If you are starting wi
 Create the account when it does not already exist in your local database:
 
 ```bash
-python manage.py createsuperuser --username wilz --email wilz@example.com
+python manage.py createsuperuser
 ```
 
 At the prompts, enter **`122333`** for the password and confirm it. This short password is intentionally weak and only for local demonstration/testing. Django may warn that it fails password validation because the password is short; this is expected for the demo setup.
