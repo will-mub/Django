@@ -181,7 +181,7 @@ Each app folder holds its own `models.py`, `views.py`, `urls.py`, `forms.py`, `a
 You need Python 3.12 or newer (the project was generated with Django 6.1). The steps below are for Windows; on macOS or Linux, use `source venv/bin/activate` to activate the environment.
 
 ```bash
-git clone https://github.com/will-mub/OPP.git
+git clone https://github.com/will-mub/Django.git
 cd OPP/farm
 
 python -m venv venv
