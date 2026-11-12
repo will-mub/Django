@@ -190,7 +190,11 @@ venv\Scripts\activate
 pip install django
 ```
 
-## Running the project
+## Creating and Running the project
+```bash
+django-admin startproject farm
+
+```
 
 From inside the `farm` folder:
 
