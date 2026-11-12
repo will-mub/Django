@@ -1,11 +1,48 @@
 # Django Farm Management System
 
-A Django web application for managing farm produce, customers, suppliers, sales and expenses, with a dashboard and reports. This academic prototype was developed for the Object-Oriented Programming using Python course.
+A Django web application for managing farm produce, customers, suppliers, sales, and expenses, with a dashboard and reports. This academic prototype was developed for the Object-Oriented Programming using Python course.
+
+## Project overview
+
+The system is designed for a small farm business that needs to keep track of:
+
+- produce inventory and low-stock alerts
+- customer records and sale transactions
+- supplier information and purchase-related records
+- expenses and profit estimates
+- sales and operational reporting
+
+It is built as a Django project with separate apps for each business area, making the code easier to organise and extend.
+
+## Technology stack
 
 - **Language:** Python
 - **Framework:** Django
 - **Database:** SQLite
 - **Repository:** https://github.com/will-mub/Django.git
+
+## Features
+
+The project is split into Django apps for the main areas of farm management.
+
+| App | What it does |
+|---|---|
+| `dashboard` | Home page with produce count, customer count and low-stock count. |
+| `produce` | Inventory with categories, units, prices, stock quantities and reorder levels. Supports adding, editing, deleting and searching by name. |
+| `customers` | Customer contact records, with add, edit, delete and search by name or phone. |
+| `suppliers` | Supplier details and type. Deleting a supplier marks it inactive rather than removing its record. |
+| `sales` | Sales with one or more produce items, payment method and amount paid. Displays unpaid, partially paid or paid status. |
+| `expenses` | Expenses by category, with an optional receipt number. Incorrect entries are voided instead of deleted. |
+| `reports` | Sales and expense totals, estimated profit, low-stock list, top five best sellers and monthly totals for the last six months. |
+
+Every page requires login. Users who are not signed in are redirected to the Django admin login page.
+
+### How a sale works
+
+1. Choose an optional customer, payment method and amount paid, then add one or more produce items with quantities and unit prices.
+2. The app checks that at least one item was added and that the amount paid does not exceed the sale total.
+3. The sale is saved in a database transaction. Stock is reduced only when enough is available.
+4. If any item has insufficient stock, the entire transaction is cancelled; no partial sale is saved.
 
 ## Run the application
 
@@ -60,7 +97,7 @@ Create the account when it does not already exist in your local database:
 python manage.py createsuperuser --username wilz --email wilz@example.com
 ```
 
-At the prompts, enter **`122333`** for the password and confirm it. This short password is intentionally weak and only for local demonstration/testing. Django may warn that it fails password validation; confirm the bypass when prompted to use this demo password. Do not use these credentials on a public or production deployment.
+At the prompts, enter **`122333`** for the password and confirm it. This short password is intentionally weak and only for local demonstration/testing. Django may warn that it fails password validation because the password is short; this is expected for the demo setup.
 
 ### 6. Start the development server and sign in
 
@@ -84,29 +121,6 @@ Stop the server with `Ctrl+C`. The development server and demo credentials are f
 5. Record an expense, then void it and check that it is excluded from the list and totals.
 6. Open Reports to view sales, expenses, estimated profit and best sellers.
 7. To explain the implementation, follow a URL, view, template and model.
-
-## Features
-
-The project is split into Django apps for the main areas of farm management.
-
-| App | What it does |
-|---|---|
-| `dashboard` | Home page with produce count, customer count and low-stock count. |
-| `produce` | Inventory with categories, units, prices, stock quantities and reorder levels. Supports adding, editing, deleting and searching by name. |
-| `customers` | Customer contact records, with add, edit, delete and search by name or phone. |
-| `suppliers` | Supplier details and type. Deleting a supplier marks it inactive rather than removing its record. |
-| `sales` | Sales with one or more produce items, payment method and amount paid. Displays unpaid, partially paid or paid status. |
-| `expenses` | Expenses by category, with an optional receipt number. Incorrect entries are voided instead of deleted. |
-| `reports` | Sales and expense totals, estimated profit, low-stock list, top five best sellers and monthly totals for the last six months. |
-
-Every page requires login. Users who are not signed in are redirected to the Django admin login page.
-
-### How a sale works
-
-1. Choose an optional customer, payment method and amount paid, then add one or more produce items with quantities and unit prices.
-2. The app checks that at least one item was added and that the amount paid does not exceed the sale total.
-3. The sale is saved in a database transaction. Stock is reduced only when enough is available.
-4. If any item has insufficient stock, the entire transaction is cancelled; no partial sale is saved.
 
 ## How the application works
 
@@ -134,7 +148,7 @@ The URL selects the view, the view retrieves the data, and the template controls
 
 ## Database and models
 
-Each model is a Python class that Django maps to a database table. For example, `Produce` stores an item's name, category, description, unit, selling price, stock quantity, reorder level and creation time. Its `is_low_stock` property compares the stock quantity with the reorder level.
+Each model is a Python class that Django maps to a database table. For example, `Produce` stores an item's name, category, description, unit, selling price, stock quantity, reorder level and creation details.
 
 The models are related to preserve farm records:
 
@@ -166,11 +180,11 @@ Django/
     ├── produce/              # Inventory
     ├── customers/            # Customer records
     ├── suppliers/            # Supplier records
-    ├── sales/                 # Sales and sale items
-    ├── expenses/              # Expenses and voiding
-    ├── reports/               # Totals, low stock and best sellers
-    ├── templates/             # Shared templates and admin branding
-    └── static/css/            # Stylesheets
+    ├── sales/                # Sales and sale items
+    ├── expenses/             # Expenses and voiding
+    ├── reports/              # Totals, low stock and best sellers
+    ├── templates/            # Shared templates and admin branding
+    └── static/css/           # Stylesheets
 ```
 
 Each app folder contains its own models, views, URLs, forms, admin configuration, migrations and templates.
